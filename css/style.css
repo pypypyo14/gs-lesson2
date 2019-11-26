@@ -1,0 +1,35 @@
+.field{
+    border: 1px #000;
+    width: 360px;
+    height: 360px;
+}
+
+.card-box{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5%;
+}
+
+.result{
+    width:100%;
+    height: 20%;
+}
+
+.card{
+    width: 70px;
+    height: 80px;
+}
+
+.card img{
+    width: 100%;
+    height: 100%;
+}
+
+.rival > .card > .selected{
+    background: pink;
+}
+
+.you >.card:hover{
+    background: lightblue;
+}
