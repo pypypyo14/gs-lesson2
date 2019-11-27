@@ -41,55 +41,50 @@ function createRandomNumber(num) {
     return random
 }
 
-function pick() {
+function drawCard() {
     let random = createRandomNumber(10);
-    let card = ''
     if (0 <= random && random < 3) {
-        card = obj['g']
+        return obj['g']
     } else if (3 <= random && random < 6) {
-        card = obj['c']
+        return obj['c']
     } else if (6 <= random && random < 9) {
-        card = obj['p']
+        return obj['p']
     } else if (random == 9) {
-        card = obj['k']
+        return obj['k']
     };
-    return card;
 }
 
+//手札と勝敗数をリセット
 function reset() {
+    $('.counter').text('0');
     $('li.card').each(function () {
-        let card = pick();
+        let card = drawCard();
+        $('.message').html('');
         // TODO: すでに場のどこかに筋肉があるならやりなおし！みたいな要素を入れたい。。
         $(this).removeClass().addClass('card remain ' + card.class);
         $(this).children('img').attr('src', card.image);
     });
 };
 
+// ライバルの出す手をランダムに決定
 function defineRivalsHand() {
+    //ライバルの出す手の形を決定
     let remainingCardsNum = $('.rival').children('li.card.remain').length;
     let random = createRandomNumber(remainingCardsNum)
     var rivalSelectHand = $('.rival').children('li.card.remain')[random].className.split(/\s+/)[2];
 
-    return rivalSelectHand;
+    // ライバルの出す手が何番目のli要素かを判定(背景色変えるため)
+    // ここもっとスマートにできそう。。
+    var rivalCardIndex = $('.rival').children('li.card').index($('.rival').children('li.card.remain')[random])
+
+    return { hand: rivalSelectHand, cardIndex: rivalCardIndex };
 }
 
-function deleteRivalCard(rivalSelectHand) {
-    $('.rival').children('li.card.remain').each(function () {
-        var cardHand = $(this).attr('class').split(/\s+/)[2];
-        if (cardHand === rivalSelectHand) {
-            $(this).addClass('selected');
-            //遅延させてからカードの見た目とクラスを変える
-            $(this).delay(3000).queue(function (next) {
-                var cardIndex = $('.rival').children('li.card').index(this) + 1;
-                $(this).children('img').attr('src', 'img/blank' + cardIndex + '.png');
-                $(this).removeClass('remain selected ' + cardHand).addClass('del');
-            });
-            // eachループをbreak
-            return false;
-        };
-    });
-}
-
+// 勝敗数のカウントアップ
+function countUp(selector) {
+    let count = parseInt($(selector).text());
+    $(selector).text(count + 1);
+};
 
 $(function () {
     reset();
@@ -98,15 +93,47 @@ $(function () {
         reset();
     });
 
-    $('.card').on('click', function () {
+    // 自分の手札をクリックすると勝負開始
+    $('.you').children('.card.remain').on('click', function () {
+
+
+        // 自分の手札判定
         let yourHand = $(this).attr('class').split(/\s+/)[2];
-        let rivalsHand = defineRivalsHand();
-        if (obj[yourHand][rivalsHand] === 'win') {
-            console.log('win')
-        } else if (obj[yourHand][rivalsHand] === 'draw') {
-            console.log('draw')
-        } else if (obj[yourHand][rivalsHand] === 'lose') {
-            console.log('lose')
-        }
+        let yourCardIndex = $('.you').children('li.card').index($(this));
+        let yourCard = $('.you').children('li.card').eq(yourCardIndex);
+
+        // 相手の手札判定
+        let rival = defineRivalsHand();
+        let rivalHand = rival.hand;
+        let rivalCardIndex = rival.cardIndex;
+        let rivalCard = $('.rival').children('li.card').eq(rivalCardIndex);
+
+        //選択されたカードに.selectedを付け、手札の選択肢から消滅させる。
+        yourCard.addClass('selected').removeClass('remain');
+        rivalCard.addClass('selected').removeClass('remain');
+
+        // 勝敗判定
+        switch (obj[yourHand][rivalHand]) {
+            case 'win':
+                countUp('.win');
+                $('.message').html('<p>WIN!</p>');
+                break;
+            case 'draw':
+                countUp('.draw');
+                $('.message').html('<p>Draw</p>');
+                break;
+            case 'lose':
+                countUp('.lose');
+                $('.message').html('<p>lose...</p>');
+                break;
+        };
+
+        //3秒後、選んだカードの見た目を変える
+        setTimeout(function () {
+            yourCard.children('img').attr('src', 'img/blank' + yourCardIndex + '.png');
+            yourCard.removeClass('selected');
+            rivalCard.children('img').attr('src', 'img/blank' + rivalCardIndex + '.png');
+            rivalCard.removeClass('selected');
+        }, 3000);
     });
 });
