@@ -42,14 +42,14 @@ function createRandomNumber(num) {
 }
 
 function drawCard() {
-    let random = createRandomNumber(10);
-    if (0 <= random && random < 3) {
+    let random = createRandomNumber(100);
+    if (0 <= random && random < 31) {
         return obj['g']
-    } else if (3 <= random && random < 6) {
+    } else if (31 <= random && random < 62) {
         return obj['c']
-    } else if (6 <= random && random < 9) {
+    } else if (62 <= random && random < 93) {
         return obj['p']
-    } else if (random == 9) {
+    } else { //レア
         return obj['k']
     };
 }
@@ -58,7 +58,6 @@ function resetCard() {
     $('li.card').each(function () {
         let card = drawCard();
         $('.message').html('');
-        // TODO: すでに場のどこかに筋肉があるならやりなおし！みたいな要素を入れたい。。
         $(this).removeClass().addClass('card remain ' + card.class);
         $(this).children('img').attr('src', card.image);
     });
@@ -100,14 +99,14 @@ function countUp(selector) {
     $(selector).text(count + 1);
 };
 
-// 勝ち抜き判定
+// 勝ち抜き判定。
 function judge_winning() {
     // 画面表示が切り替わってから実行させるためちょっと遅延させる
     setTimeout(function () {
         let win = parseInt($('.win').text());
         let lose = parseInt($('.lose').text());
         let draw = parseInt($('.draw').text());
-        // 勝ち+引き分け数が負け数より多ければ、次の挑戦者へ
+        // 勝ち+引き分け数が負け数より多ければ、次の挑戦者へ。負けたら終わり
         if (win + draw > lose) {
             countUp('.winning');
             nextChallenge();
@@ -124,7 +123,6 @@ $(function () {
 
     // 自分の手札をクリックすると勝負開始
     $('.you').children('.card.remain').on('click', function () {
-
         // 自分の手札判定
         let yourHand = $(this).attr('class').split(/\s+/)[2];
         let yourCardIndex = $('.you').children('li.card').index($(this));
@@ -136,7 +134,8 @@ $(function () {
         let rivalCardIndex = rival.cardIndex;
         let rivalCard = $('.rival').children('li.card').eq(rivalCardIndex);
 
-        //選択されたカードに.selectedを付け、手札の選択肢から消滅させる。
+        //選択されたカードに選択済みの背景色(.selected)とクリック無効効果(.done)をつける。
+        // 手札から消滅させる(.remain を外す)。
         yourCard.addClass('selected done').removeClass('remain');
         rivalCard.addClass('selected done').removeClass('remain');
 
@@ -156,7 +155,7 @@ $(function () {
                 break;
         };
 
-        //0.01秒後、選んだカードの見た目を変える
+        //0.01秒後、選んだ手札は画像を変える
         setTimeout(function () {
             yourCard.children('img').attr('src', 'img/blank' + yourCardIndex + '.png');
             yourCard.removeClass('selected');
@@ -164,6 +163,7 @@ $(function () {
             rivalCard.removeClass('selected');
         }, 10);
 
+        // 手札がなくなったら勝ち抜き判定
         if ($('.you').children('li.card.remain').length === 0) {
             judge_winning();
         }
