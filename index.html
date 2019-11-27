@@ -8,12 +8,13 @@
     <title>じゃんけんカードゲーム</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Kosugi+Maru&display=swap&subset=japanese" rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
         <h1>じゃんけんカードゲーム</h1>
-        <button class="reset">やりなおし</button>
+        <button class="reset">はじめから</button>
 
         <div class="field">
             <ul class="rival card-box">
@@ -28,11 +29,15 @@
                 <li class="card"><img src=""></li>
             </ul>
         </div>
-        <div class="point">
-            <ul class="point-box">
+        <div class="score">
+            <ul class="counter-list">
                 <li><span class="counter win">0</span>勝</li>
                 <li><span class="counter lose">0</span>敗</li>
                 <li><span class="counter draw">0</span>分</li>
+            </ul>
+            <ul>
+                <li>現在: <span class="winning">0</span>人抜き</li>
+                <li>最高記録: <span class="max-winning">0</span>人抜き</li>
             </ul>
         </div>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

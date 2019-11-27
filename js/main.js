@@ -73,8 +73,7 @@ function defineRivalsHand() {
     let random = createRandomNumber(remainingCardsNum)
     var rivalSelectHand = $('.rival').children('li.card.remain')[random].className.split(/\s+/)[2];
 
-    // ライバルの出す手が何番目のli要素かを判定(背景色変えるため)
-    // ここもっとスマートにできそう。。
+    // ライバルの出す手が何番目のli要素かを判定
     var rivalCardIndex = $('.rival').children('li.card').index($('.rival').children('li.card.remain')[random])
 
     return { hand: rivalSelectHand, cardIndex: rivalCardIndex };
@@ -95,7 +94,6 @@ $(function () {
 
     // 自分の手札をクリックすると勝負開始
     $('.you').children('.card.remain').on('click', function () {
-
 
         // 自分の手札判定
         let yourHand = $(this).attr('class').split(/\s+/)[2];
