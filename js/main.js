@@ -54,9 +54,7 @@ function drawCard() {
     };
 }
 
-//手札と勝敗数をリセット
-function reset() {
-    $('.counter').text('0');
+function resetCard() {
     $('li.card').each(function () {
         let card = drawCard();
         $('.message').html('');
@@ -64,6 +62,23 @@ function reset() {
         $(this).removeClass().addClass('card remain ' + card.class);
         $(this).children('img').attr('src', card.image);
     });
+}
+
+// リセット
+function initializeReset() {
+    $('.counter').text('0');
+    resetCard();
+};
+
+function nextChallenge() {
+    $('.counter-list').children('li').children('.counter').text('0');
+    resetCard();
+    let nowWinning = parseInt($('.winning').text())
+    let maxWinning = parseInt($('.max-winning').text())
+
+    if (nowWinning > maxWinning) {
+        $('.max-winning').text(nowWinning);
+    };
 };
 
 // ライバルの出す手をランダムに決定
@@ -85,11 +100,26 @@ function countUp(selector) {
     $(selector).text(count + 1);
 };
 
+// 勝ち抜き判定
+function judge_winning() {
+    // 画面表示が切り替わってから実行させるためちょっと遅延させる
+    setTimeout(function () {
+        let win = parseInt($('.win').text());
+        let lose = parseInt($('.lose').text());
+        let draw = parseInt($('.draw').text());
+        // 勝ち+引き分け数が負け数より多ければ、次の挑戦者へ
+        if (win + draw > lose) {
+            countUp('.winning');
+            nextChallenge();
+        };
+    }, 15);
+};
+
 $(function () {
-    reset();
+    initializeReset();
 
     $('.reset').on('click', function () {
-        reset();
+        initializeReset();
     });
 
     // 自分の手札をクリックすると勝負開始
@@ -107,8 +137,8 @@ $(function () {
         let rivalCard = $('.rival').children('li.card').eq(rivalCardIndex);
 
         //選択されたカードに.selectedを付け、手札の選択肢から消滅させる。
-        yourCard.addClass('selected').removeClass('remain');
-        rivalCard.addClass('selected').removeClass('remain');
+        yourCard.addClass('selected done').removeClass('remain');
+        rivalCard.addClass('selected done').removeClass('remain');
 
         // 勝敗判定
         switch (obj[yourHand][rivalHand]) {
@@ -126,12 +156,16 @@ $(function () {
                 break;
         };
 
-        //3秒後、選んだカードの見た目を変える
+        //0.01秒後、選んだカードの見た目を変える
         setTimeout(function () {
             yourCard.children('img').attr('src', 'img/blank' + yourCardIndex + '.png');
             yourCard.removeClass('selected');
             rivalCard.children('img').attr('src', 'img/blank' + rivalCardIndex + '.png');
             rivalCard.removeClass('selected');
-        }, 3000);
+        }, 10);
+
+        if ($('.you').children('li.card.remain').length === 0) {
+            judge_winning();
+        }
     });
 });

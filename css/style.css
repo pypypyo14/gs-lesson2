@@ -76,18 +76,18 @@ button:focus {
     height: 100%;
 }
 
-.rival > .card > .selected{
-    background: #fcc5ea;
-}
-
 .you >.card:hover{
     background: #d4fcc5;
 }
 
 .selected{
     background: #fcc5ea;
+}
+
+.done{
     pointer-events: none;
 }
+
 
 .score{
     width: 360px;
