@@ -66,6 +66,11 @@ function resetCard() {
 // リセット
 function initializeReset() {
     $('.counter').text('0');
+    if (localStorage.getItem('maxWinning')) {
+        $('.max-winning').text(localStorage.getItem('maxWinning'));
+    } else {
+        $('.max-winning').text('0');
+    }
     resetCard();
 };
 
@@ -77,6 +82,7 @@ function nextChallenge() {
 
     if (nowWinning > maxWinning) {
         $('.max-winning').text(nowWinning);
+        localStorage.setItem('maxWinning', nowWinning);
     };
 };
 
