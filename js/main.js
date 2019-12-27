@@ -2,37 +2,25 @@
 
 // 手の定義
 const obj = {
-    g: {
-        class: 'g',
+    gu: {
+        class: 'gu',
         image: 'img/janken_gu.png',
-        g: 'draw', //グーには引き分け
-        c: 'win',  //チョキには勝つ
-        p: 'lose', //パーには負ける
-        k: 'lose'  //筋肉にも負ける
+        num: 0
     },
-    c: {
-        class: 'c',
+    choki: {
+        class: 'choki',
         image: 'img/janken_choki.png',
-        g: 'lose',
-        c: 'draw',
-        p: 'win',
-        k: 'lose'
+        num: 1
     },
-    p: {
-        class: 'p',
+    pa: {
+        class: 'pa',
         image: 'img/janken_pa.png',
-        g: 'win',
-        c: 'lose',
-        p: 'draw',
-        k: 'lose'
+        num: 2
     },
-    k: {
-        class: 'k',
+    kinniku: {
+        class: 'kinniku',
         image: 'img/kinniku.png',
-        g: 'win',
-        c: 'win',
-        p: 'win',
-        k: 'draw'
+        num: 3
     }
 }
 
@@ -44,13 +32,13 @@ function createRandomNumber(num) {
 function drawCard() {
     let random = createRandomNumber(100);
     if (0 <= random && random < 31) {
-        return obj['g']
+        return obj['gu']
     } else if (31 <= random && random < 62) {
-        return obj['c']
+        return obj['choki']
     } else if (62 <= random && random < 93) {
-        return obj['p']
+        return obj['pa']
     } else { //レア
-        return obj['k']
+        return obj['kinniku']
     };
 }
 
@@ -120,6 +108,11 @@ function judge_winning() {
     }, 15);
 };
 
+function drawResult(result, msg) {
+    countUp(`.${result}`);
+    $('.message').html(`<p>${msg}</p>`);
+};
+
 $(function () {
     initializeReset();
 
@@ -146,19 +139,22 @@ $(function () {
         rivalCard.addClass('selected done').removeClass('remain');
 
         // 勝敗判定
-        switch (obj[yourHand][rivalHand]) {
-            case 'win':
-                countUp('.win');
-                $('.message').html('<p>WIN!</p>');
-                break;
-            case 'draw':
-                countUp('.draw');
-                $('.message').html('<p>Draw</p>');
-                break;
-            case 'lose':
-                countUp('.lose');
-                $('.message').html('<p>lose...</p>');
-                break;
+        if (obj[yourHand] == 'kinniku') {
+            drawResult('win', 'WIN!');
+        } else {
+            // 参考: https://qiita.com/mpyw/items/3ffaac0f1b4a7713c869
+            let result = (obj[yourHand].num - obj[rivalHand].num + 3) % 3
+            switch (result) {
+                case 2:
+                    drawResult('win', 'WIN!');
+                    break;
+                case 1:
+                    drawResult('draw', 'draw');
+                    break;
+                case 0:
+                    drawResult('lose', 'lose...');
+                    break;
+            };
         };
 
         //0.01秒後、選んだ手札は画像を変える
